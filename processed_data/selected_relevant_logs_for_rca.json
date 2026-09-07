@@ -1,0 +1,421 @@
+[
+  {
+    "incident_id": "incident_000",
+    "anomaly_type": "dw_timeout",
+    "category": "DATABASE_UNAVAILABLE",
+    "window": {
+      "start_epoch": 1788271488,
+      "end_epoch": 1788272174,
+      "start_iso": "2026-09-01 14:04:48 UTC",
+      "end_iso": "2026-09-01 14:16:14 UTC",
+      "duration_seconds": 686
+    },
+    "topology_context": {
+      "flow_description": "emitter -> kinesis (localstack) -> extract_task -> transform_task -> load_task -> data_warehouse",
+      "candidate_components": [
+        "airflow-scheduler",
+        "data_warehouse",
+        "load_task",
+        "transform_task"
+      ]
+    },
+    "tranad_evidence": {
+      "expected_anomalous_metrics": [
+        "records_loaded"
+      ],
+      "duration_seconds": 686
+    },
+    "ground_truth": {
+      "root_cause_summary": "Interrupción / pausa del contenedor PostgreSQL Data Warehouse (analytics_db) en el puerto 5432, impidiendo la persistencia de lotes.",
+      "expected_anomalous_metrics": [
+        "records_loaded"
+      ],
+      "primary_affected_components": [
+        "data_warehouse",
+        "load_task"
+      ],
+      "recommended_remediations": [
+        "Verificar el estado del servicio PostgreSQL y su conectividad de red en el puerto 5432.",
+        "Revisar el pool de conexiones de base de datos y deadlocks en el DW.",
+        "Implementar políticas de retry con backoff exponencial en la tarea 'load_task'."
+      ],
+      "expected_cascade_effects": "Fallo directo por timeout de conexión TCP en 'load_task'; reintentos sucesivos y retención de lotes en memoria/staging de Airflow; degradación temporal de disponibilidad del data warehouse para consumidores analíticos downstream."
+    },
+    "neurallog_top_logs": [
+      {
+        "timestamp": 1788272174,
+        "iso_timestamp": "2026-09-01T14:16:14.091026+00:00",
+        "component": "load_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 1.0,
+        "message": "Carga de 12 registros en Data Warehouse exitosa."
+      },
+      {
+        "timestamp": 1788272027,
+        "iso_timestamp": "2026-09-01T14:13:47.094891+00:00",
+        "component": "transform_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.8169,
+        "message": "Transformados 11 registros."
+      },
+      {
+        "timestamp": 1788272174,
+        "iso_timestamp": "2026-09-01T14:16:14+00:00",
+        "component": "load_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.6596,
+        "message": "[2026-09-01T14:16:14.074+0000] {sql.py:418} INFO - Running statement:"
+      },
+      {
+        "timestamp": 1788272174,
+        "iso_timestamp": "2026-09-01T14:16:14+00:00",
+        "component": "airflow-scheduler",
+        "service_name": "dataset_gen-airflow-scheduler-1",
+        "level": "INFO",
+        "anomaly_score": 0.4235,
+        "message": "[\u001b[34m2026-09-01T14:16:14.926+0000\u001b[0m] {\u001b[34mscheduler_job_runner.py:\u001b[0m723} INFO\u001b[0m - TaskInstance Finished: dag_id=tfm_distributed_pipeline, task_id=load_task, run_id=scheduled__2026-09-01T14:09:44.819526+00:00, map_index=-1, run_start_date=2026-09-01 14:10:48.176042+00:00, run_end_date=2026-09-01 14:16:14.103143+00:00, run_duration=325.927101, state=success, executor_state=success, try_number=1, max_tries=1, job_id=124, pool=default_pool, queue=default, priority_weight=1, operator=PythonOperator, queued_dttm=2026-09-01 14:10:47.704221+00:00, queued_by_job_id=1, pid=824\u001b[0m"
+      },
+      {
+        "timestamp": 1788271843,
+        "iso_timestamp": "2026-09-01T14:10:43+00:00",
+        "component": "airflow-scheduler",
+        "service_name": "dataset_gen-airflow-scheduler-1",
+        "level": "INFO",
+        "anomaly_score": 0.4223,
+        "message": "[\u001b[34m2026-09-01T14:10:43.209+0000\u001b[0m] {\u001b[34mscheduler_job_runner.py:\u001b[0m1586} INFO\u001b[0m - Adopting or resetting orphaned tasks for active dag runs\u001b[0m"
+      },
+      {
+        "timestamp": 1788271488,
+        "iso_timestamp": "2026-09-01T14:04:48+00:00",
+        "component": "airflow-scheduler",
+        "service_name": "dataset_gen-airflow-scheduler-1",
+        "level": "INFO",
+        "anomaly_score": 0.4144,
+        "message": "[\u001b[34m2026-09-01T14:04:48.365+0000\u001b[0m] {\u001b[34mdag.py:\u001b[0m3696} INFO\u001b[0m - Setting next_dagrun for tfm_distributed_pipeline to 2026-09-01T14:04:44.819526+00:00, run_after=2026-09-01T14:05:44.819526+00:00\u001b[0m"
+      },
+      {
+        "timestamp": 1788272174,
+        "iso_timestamp": "2026-09-01T14:16:14+00:00",
+        "component": "airflow-scheduler",
+        "service_name": "dataset_gen-airflow-scheduler-1",
+        "level": "INFO",
+        "anomaly_score": 0.4029,
+        "message": "[\u001b[34m2026-09-01T14:16:14.893+0000\u001b[0m] {\u001b[34mdagrun.py:\u001b[0m653} INFO\u001b[0m - Marking run <DagRun tfm_distributed_pipeline @ 2026-09-01 14:10:44.819526+00:00: scheduled__2026-09-01T14:10:44.819526+00:00, state:running, queued_at: 2026-09-01 14:11:45.477632+00:00. externally triggered: False> successful\u001b[0m"
+      },
+      {
+        "timestamp": 1788271548,
+        "iso_timestamp": "2026-09-01T14:05:48+00:00",
+        "component": "load_task",
+        "service_name": "airflow",
+        "level": "WARNING",
+        "anomaly_score": 0.3803,
+        "message": "[2026-09-01T14:05:48.328+0000] {crypto.py:82} WARNING - empty cryptography key - values will not be stored encrypted."
+      },
+      {
+        "timestamp": 1788271547,
+        "iso_timestamp": "2026-09-01T14:05:47+00:00",
+        "component": "transform_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.3786,
+        "message": "[2026-09-01T14:05:47.270+0000] {python.py:194} INFO - Done. Returned value was: None"
+      },
+      {
+        "timestamp": 1788272088,
+        "iso_timestamp": "2026-09-01T14:14:48+00:00",
+        "component": "load_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.3689,
+        "message": "[2026-09-01T14:14:48.891+0000] {base.py:73} INFO - Using connection ID 'dw_conn' for task execution."
+      }
+    ]
+  },
+  {
+    "incident_id": "incident_001",
+    "anomaly_type": "emitter_down",
+    "category": "SOURCE_PRODUCER_FAILURE",
+    "window": {
+      "start_epoch": 1788273078,
+      "end_epoch": 1788274027,
+      "start_iso": "2026-09-01 14:31:18 UTC",
+      "end_iso": "2026-09-01 14:47:07 UTC",
+      "duration_seconds": 949
+    },
+    "topology_context": {
+      "flow_description": "emitter -> kinesis (localstack) -> extract_task -> transform_task -> load_task -> data_warehouse",
+      "candidate_components": [
+        "airflow-scheduler",
+        "emitter",
+        "extract_task",
+        "kinesis_emitter",
+        "kinesis_stream",
+        "localstack"
+      ]
+    },
+    "tranad_evidence": {
+      "expected_anomalous_metrics": [
+        "emitter_status",
+        "emitter_records_sent",
+        "records_extracted"
+      ],
+      "duration_seconds": 949
+    },
+    "ground_truth": {
+      "root_cause_summary": "Detención silenciosa del microservicio emisor de datos (kinesis_emitter) que inyecta telemetría continua al stream de Kinesis.",
+      "expected_anomalous_metrics": [
+        "emitter_status",
+        "emitter_records_sent",
+        "records_extracted"
+      ],
+      "primary_affected_components": [
+        "emitter",
+        "kinesis_stream",
+        "extract_task"
+      ],
+      "recommended_remediations": [
+        "Reiniciar el contenedor/proceso 'kinesis_emitter'.",
+        "Comprobar logs del emisor para descartar Out-Of-Memory (OOM) o excepciones en el hilo de emisión.",
+        "Configurar una sonda de healthcheck y política de auto-restart en docker-compose / Kubernetes."
+      ],
+      "expected_cascade_effects": "Drenaje de registros remanentes en el stream de Kinesis; caída a 0 de la ingesta en 'extract_task' (records_extracted = 0); propagación secuencial de inanición de datos (data starvation) hacia 'transform_task' y 'load_task' por ausencia de registros entrantes."
+    },
+    "neurallog_top_logs": [
+      {
+        "timestamp": 1788273136,
+        "iso_timestamp": "2026-09-01T14:32:16.000703+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 1.0,
+        "message": "No hay datos nuevos en Kinesis stream."
+      },
+      {
+        "timestamp": 1788274027,
+        "iso_timestamp": "2026-09-01T14:47:07+00:00",
+        "component": "emitter",
+        "service_name": "kinesis_emitter",
+        "level": "INFO",
+        "anomaly_score": 1.0,
+        "message": "Requirement already satisfied: boto3 in /usr/local/lib/python3.13/site-packages (1.43.85)"
+      },
+      {
+        "timestamp": 1788274027,
+        "iso_timestamp": "2026-09-01T14:47:07+00:00",
+        "component": "emitter",
+        "service_name": "kinesis_emitter",
+        "level": "WARNING",
+        "anomaly_score": 1.0,
+        "message": "WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning."
+      },
+      {
+        "timestamp": 1788273736,
+        "iso_timestamp": "2026-09-01T14:42:16+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.7896,
+        "message": "[2026-09-01T14:42:16.161+0000] {python.py:194} INFO - Done. Returned value was: None"
+      },
+      {
+        "timestamp": 1788273256,
+        "iso_timestamp": "2026-09-01T14:34:16+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.6581,
+        "message": "[2026-09-01T14:34:16.116+0000] {configprovider.py:949} INFO - Found endpoint for kinesis via: environment_global."
+      },
+      {
+        "timestamp": 1788273375,
+        "iso_timestamp": "2026-09-01T14:36:15+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.5354,
+        "message": "[2026-09-01T14:36:15.789+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: tfm_distributed_pipeline.extract_task scheduled__2026-09-01T14:35:14.903315+00:00 [queued]>"
+      },
+      {
+        "timestamp": 1788273196,
+        "iso_timestamp": "2026-09-01T14:33:16+00:00",
+        "component": "localstack",
+        "service_name": "localstack",
+        "level": "INFO",
+        "anomaly_score": 0.4885,
+        "message": "2026-09-01T14:33:16.490  INFO --- [et.reactor-0] localstack.request.aws     : AWS kinesis.GetShardIterator => 200"
+      },
+      {
+        "timestamp": 1788273197,
+        "iso_timestamp": "2026-09-01T14:33:17+00:00",
+        "component": "airflow-scheduler",
+        "service_name": "dataset_gen-airflow-scheduler-1",
+        "level": "INFO",
+        "anomaly_score": 0.4869,
+        "message": "[\u001b[34m2026-09-01T14:33:17.179+0000\u001b[0m] {\u001b[34mtask_command.py:\u001b[0m415} INFO\u001b[0m - Running <TaskInstance: tfm_distributed_pipeline.transform_task scheduled__2026-09-01T14:32:14.903315+00:00 [queued]> on host d6e0a0a06a22\u001b[0m"
+      },
+      {
+        "timestamp": 1788273943,
+        "iso_timestamp": "2026-09-01T14:45:43+00:00",
+        "component": "airflow-scheduler",
+        "service_name": "dataset_gen-airflow-scheduler-1",
+        "level": "INFO",
+        "anomaly_score": 0.4471,
+        "message": "[\u001b[34m2026-09-01T14:45:43.535+0000\u001b[0m] {\u001b[34mscheduler_job_runner.py:\u001b[0m1586} INFO\u001b[0m - Adopting or resetting orphaned tasks for active dag runs\u001b[0m"
+      },
+      {
+        "timestamp": 1788273257,
+        "iso_timestamp": "2026-09-01T14:34:17+00:00",
+        "component": "airflow-scheduler",
+        "service_name": "dataset_gen-airflow-scheduler-1",
+        "level": "INFO",
+        "anomaly_score": 0.4223,
+        "message": "[\u001b[34m2026-09-01T14:34:17.278+0000\u001b[0m] {\u001b[34mscheduler_job_runner.py:\u001b[0m414} INFO\u001b[0m - 1 tasks up for execution:"
+      }
+    ]
+  },
+  {
+    "incident_id": "incident_002",
+    "anomaly_type": "aws_down",
+    "category": "MESSAGE_BROKER_UNAVAILABLE",
+    "window": {
+      "start_epoch": 1788274694,
+      "end_epoch": 1788275347,
+      "start_iso": "2026-09-01 14:58:14 UTC",
+      "end_iso": "2026-09-01 15:09:07 UTC",
+      "duration_seconds": 653
+    },
+    "topology_context": {
+      "flow_description": "emitter -> kinesis (localstack) -> extract_task -> transform_task -> load_task -> data_warehouse",
+      "candidate_components": [
+        "airflow-scheduler",
+        "emitter",
+        "extract_task",
+        "kinesis_emitter",
+        "kinesis_stream",
+        "localstack"
+      ]
+    },
+    "tranad_evidence": {
+      "expected_anomalous_metrics": [
+        "records_extracted",
+        "kinesis_lag_ms",
+        "emitter_latency"
+      ],
+      "duration_seconds": 653
+    },
+    "ground_truth": {
+      "root_cause_summary": "Pausa / congelación del contenedor AWS LocalStack (Kinesis endpoint), manifestado a nivel de proceso por saturación de CPU y bloqueo del bucle de eventos asíncronos (CPU starvation en kinesis_mock_server) impidiendo responder a peticiones HTTP en el puerto 4566.",
+      "expected_anomalous_metrics": [
+        "records_extracted",
+        "kinesis_lag_ms",
+        "emitter_latency"
+      ],
+      "primary_affected_components": [
+        "kinesis_stream",
+        "emitter",
+        "extract_task"
+      ],
+      "recommended_remediations": [
+        "Reanudar / reiniciar el servicio LocalStack/AWS Kinesis.",
+        "Comprobar latencia de red y resolución DNS del endpoint http://localstack:4566.",
+        "Asegurar credenciales y permisos IAM para operaciones get_records y put_record."
+      ],
+      "expected_cascade_effects": "Impacto bidireccional severo en el pipeline: aguas arriba (upstream), el microservicio 'emitter' experimenta timeouts de conexión/escritura (put_record), saturación de búfer y aumento de 'emitter_latency'; aguas abajo (downstream), la tarea 'extract_task' de Airflow sufre timeouts de lectura (get_records) e interrupción de la ingesta (records_extracted = 0), propagando inanición de datos (data starvation) hacia 'transform_task' y 'load_task'."
+    },
+    "neurallog_top_logs": [
+      {
+        "timestamp": 1788275003,
+        "iso_timestamp": "2026-09-01T15:03:23.449002+00:00",
+        "component": "emitter",
+        "service_name": "kinesis_emitter",
+        "level": "ERROR",
+        "anomaly_score": 1.0,
+        "message": "Error crítico al emitir registro a Kinesis: Read timeout on endpoint URL: \"http://localstack:4566/\""
+      },
+      {
+        "timestamp": 1788275315,
+        "iso_timestamp": "2026-09-01T15:08:35.280524+00:00",
+        "component": "emitter",
+        "service_name": "kinesis_emitter",
+        "level": "ERROR",
+        "anomaly_score": 1.0,
+        "message": "Error crítico al emitir registro a Kinesis: Connect timeout on endpoint URL: \"http://localstack:4566/\""
+      },
+      {
+        "timestamp": 1788275347,
+        "iso_timestamp": "2026-09-01T15:09:07+00:00",
+        "component": "localstack",
+        "service_name": "localstack",
+        "level": "WARNING",
+        "anomaly_score": 1.0,
+        "message": "2026-09-01T15:09:07.385  INFO --- [-functhread5] l.s.k.kinesis_mock_server  : 2026-09-01T15:09:07.383Z [WARNING] Your app's responsiveness to a new asynchronous event (such as a new connection, an upstream response, or a timer) was in excess of 100 milliseconds. Your CPU is probably starving. Consider increasing the granularity of your delays or adding more cedes. This may also be a sign that you are unintentionally running blocking I/O operations (such as File or InetAddress) without the blocking combinator."
+      },
+      {
+        "timestamp": 1788275006,
+        "iso_timestamp": "2026-09-01T15:03:26.651506+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "WARNING",
+        "anomaly_score": 0.9827,
+        "message": "SequenceNumber guardado (49677933157902725897874967438501316705705405860122984450) no encontrado en Kinesis (Read timeout on endpoint URL: \"http://localstack:4566/\"). Reiniciando con TRIM_HORIZON..."
+      },
+      {
+        "timestamp": 1788275314,
+        "iso_timestamp": "2026-09-01T15:08:34.607999+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "ERROR",
+        "anomaly_score": 0.9756,
+        "message": "ERROR crítico de conexión a Kinesis: Connect timeout on endpoint URL: \"http://localstack:4566/\""
+      },
+      {
+        "timestamp": 1788275306,
+        "iso_timestamp": "2026-09-01T15:08:26.085466+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "WARNING",
+        "anomaly_score": 0.9463,
+        "message": "SequenceNumber guardado (49677933157902725897874967438501316705705405860122984450) no encontrado en Kinesis (Connect timeout on endpoint URL: \"http://localstack:4566/\"). Reiniciando con TRIM_HORIZON..."
+      },
+      {
+        "timestamp": 1788275347,
+        "iso_timestamp": "2026-09-01T15:09:07+00:00",
+        "component": "localstack",
+        "service_name": "localstack",
+        "level": "INFO",
+        "anomaly_score": 0.9073,
+        "message": "2026-09-01T15:09:07.454  INFO --- [et.reactor-1] localstack.request.aws     : AWS kinesis.GetShardIterator => 200"
+      },
+      {
+        "timestamp": 1788275314,
+        "iso_timestamp": "2026-09-01T15:08:34+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "ERROR",
+        "anomaly_score": 0.5664,
+        "message": "[2026-09-01T15:08:34.612+0000] {taskinstance.py:1935} ERROR - Task failed with exception"
+      },
+      {
+        "timestamp": 1788275314,
+        "iso_timestamp": "2026-09-01T15:08:34+00:00",
+        "component": "extract_task",
+        "service_name": "airflow",
+        "level": "INFO",
+        "anomaly_score": 0.5657,
+        "message": "[2026-09-01T15:08:34.621+0000] {taskinstance.py:1398} INFO - Marking task as UP_FOR_RETRY. dag_id=tfm_distributed_pipeline, task_id=extract_task, execution_date=20260901T145714, start_date=20260901T145815, end_date=20260901T150834"
+      },
+      {
+        "timestamp": 1788275347,
+        "iso_timestamp": "2026-09-01T15:09:07+00:00",
+        "component": "localstack",
+        "service_name": "localstack",
+        "level": "INFO",
+        "anomaly_score": 0.546,
+        "message": "2026-09-01T15:09:07.631  INFO --- [t.reactor-17] localstack.request.aws     : AWS kinesis.PutRecord => 200"
+      }
+    ]
+  }
+]

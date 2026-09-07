@@ -1,0 +1,45 @@
+{
+  "scaler": {
+    "file_name": "tranad_scaler.joblib",
+    "type": "RobustScaler+SymLog"
+  },
+  "available_window_sizes": [
+    {
+      "size": 5,
+      "file_name": "tranad_processed_tensors_w5.pt",
+      "window_seconds": 25
+    },
+    {
+      "size": 10,
+      "file_name": "tranad_processed_tensors_w10.pt",
+      "window_seconds": 50
+    },
+    {
+      "size": 15,
+      "file_name": "tranad_processed_tensors_w15.pt",
+      "window_seconds": 75
+    },
+    {
+      "size": 20,
+      "file_name": "tranad_processed_tensors_w20.pt",
+      "window_seconds": 100
+    }
+  ],
+  "default_window_size": 10,
+  "feature_columns": [
+    "emitter_status",
+    "emitter_records_sent",
+    "emitter_latency",
+    "emitter_cpu_usage",
+    "emitter_memory_usage",
+    "cpu_usage",
+    "memory_usage",
+    "records_extracted",
+    "records_loaded",
+    "kinesis_lag_ms"
+  ],
+  "num_features": 10,
+  "train_samples": 1815,
+  "val_samples": 870,
+  "test_samples": 1321
+}

@@ -1,0 +1,39 @@
+[
+  {
+    "anomaly_id": "incident_000",
+    "anomaly_type": "cpu_stress",
+    "category": "INFRASTRUCTURE_RESOURCE_STARVATION",
+    "window": {
+      "start_epoch": 1788267853,
+      "end_epoch": 1788268195,
+      "start_iso": "2026-09-01 13:04:13 UTC",
+      "end_iso": "2026-09-01 13:09:55 UTC",
+      "duration_seconds": 342
+    },
+    "ground_truth": {
+      "root_cause_summary": "Estrés y estrangulamiento de CPU inducido en el contenedor de Airflow Scheduler.",
+      "expected_anomalous_metrics": [
+        "cpu_usage",
+        "records_extracted",
+        "kinesis_lag_ms"
+      ],
+      "primary_affected_components": [
+        "airflow_infra",
+        "extract_task",
+        "transform_task",
+        "load_task"
+      ],
+      "recommended_remediations": [
+        "Escalar horizontalmente los workers de Airflow (Celery/KubernetesExecutor).",
+        "Aumentar límites de asignación de CPU (CPU limits / quotas en Docker/K8s).",
+        "Optimizar la concurrencia de DAGs en airflow.cfg (max_active_runs, parallelism)."
+      ]
+    },
+    "evidence": {
+      "total_window_logs": 641,
+      "problematic_logs_count": 0,
+      "relevant_problem_logs_sample": []
+    },
+    "llm_prompt_template": "### CONTEXTO DE ARQUITECTURA (DAG TOPOLOGY):\nFlujo del Pipeline: emitter -> kinesis (localstack) -> extract_task -> transform_task -> load_task -> data_warehouse\n\n### DETECCIÓN DE ANOMALÍA (TranAD+):\n- Ventana temporal: 2026-09-01 13:04:13 UTC - 2026-09-01 13:09:55 UTC (Duración: 342s)\n- Métricas con alto error de reconstrucción: cpu_usage, records_extracted, kinesis_lag_ms\n- Componentes candidatos identificados por Linaje/Topología: airflow_infra, extract_task, transform_task, load_task\n\n### LOGS EXTRAÍDOS DE COMPONENTES CANDIDATOS (Nivel ERROR/WARN):\n(No se registraron excepciones explícitas en logs durante esta ventana)\n\n### INSTRUCCIONES PARA EL DIAGNÓSTICO (RCA):\n1. Determina la causa raíz exacta del problema en el pipeline.\n2. Explica la propagación del fallo en cascada (upstream vs downstream).\n3. Propone las acciones técnicas inmediatas de remediación para restablecer el servicio.\n"
+  }
+]

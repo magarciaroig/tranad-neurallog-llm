@@ -1,0 +1,54 @@
+{
+  "model": "TranADPlus",
+  "champion_window_size": 15,
+  "champion_window_seconds": 75,
+  "champion_gamma": 0.7,
+  "champion_lambda": 0.3,
+  "threshold": 0.23693203926086426,
+  "threshold_method": "Optimal_Val_F1",
+  "point_wise_metrics": {
+    "precision": 0.556390977443609,
+    "recall": 0.8114035087719298,
+    "f1_score": 0.6601248884924175,
+    "specificity": 0.6589595375714925,
+    "accuracy": 0.7115821347464042,
+    "roc_auc": 0.7434210526315789,
+    "pr_auc": 0.5706067633585141
+  },
+  "point_adjustment_metrics": {
+    "pa_precision": 0.607190412782956,
+    "pa_recall": 1.0,
+    "pa_f1_score": 0.7555923777961889
+  },
+  "event_level_metrics": {
+    "total_incidents": 3,
+    "detected_incidents": 3,
+    "incident_recall": 1.0,
+    "incident_details": [
+      {
+        "anomaly_id": "incident_000",
+        "anomaly_type": "dw_timeout",
+        "detected": true,
+        "latency_sec": 304,
+        "total_steps": 137,
+        "detected_steps": 64
+      },
+      {
+        "anomaly_id": "incident_001",
+        "anomaly_type": "emitter_down",
+        "detected": true,
+        "latency_sec": 64,
+        "total_steps": 190,
+        "detected_steps": 177
+      },
+      {
+        "anomaly_id": "incident_002",
+        "anomaly_type": "aws_down",
+        "detected": true,
+        "latency_sec": 3,
+        "total_steps": 131,
+        "detected_steps": 131
+      }
+    ]
+  }
+}

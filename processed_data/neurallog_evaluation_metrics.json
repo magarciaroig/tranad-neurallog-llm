@@ -1,0 +1,23 @@
+{
+  "model_name": "NeuralLog (Sentence-BERT + Isolation Forest)",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_dimension": 384,
+  "feature_dimension": 771,
+  "threshold_tau": 0.96,
+  "test_metrics": {
+    "precision": 0.0477326968973747,
+    "recall": 0.6666666666666666,
+    "f1_score": 0.08908685968819599,
+    "roc_auc": 0.9712209999657311,
+    "pr_auc": 0.035762351689785234,
+    "noise_reduction_percentage": 97.94900791610979
+  },
+  "retrieval_benchmark": {
+    "total_incidents": 3,
+    "hit_rate_at_3": 1.0,
+    "hit_rate_at_5": 1.0,
+    "hit_rate_at_10": 1.0,
+    "mean_reciprocal_rank": 1.0,
+    "strict_error_hit_rate_at_3": 0.3333333333333333
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "benchmark_summary": [
+    {
+      "model_id": "gemini-3.5-flash",
+      "display_name": "Gemini 3.5 Flash",
+      "provider": "gemini",
+      "role": "Cloud Reasoning (CoT Reflexivo)",
+      "mean_global_score": 75.83333333333333,
+      "mean_comp_score": 73.33333333333333,
+      "mean_mech_score": 73.33333333333333,
+      "mean_cascade_score": 83.33333333333333,
+      "mean_rem_score": 78.33333333333333,
+      "mean_latency_seconds": 14.814677686999934,
+      "mean_tokens": 1032.3333333333333,
+      "total_tokens": 3097
+    },
+    {
+      "model_id": "gemini-3.1-flash-lite",
+      "display_name": "Gemini 3.1 Flash-Lite",
+      "provider": "gemini",
+      "role": "Cloud Fast (Baja Latencia / Triage)",
+      "mean_global_score": 65.06666666666666,
+      "mean_comp_score": 68.33333333333333,
+      "mean_mech_score": 55.0,
+      "mean_cascade_score": 73.33333333333333,
+      "mean_rem_score": 68.33333333333333,
+      "mean_latency_seconds": 3.720272726999989,
+      "mean_tokens": 740.6666666666666,
+      "total_tokens": 2222
+    },
+    {
+      "model_id": "deepseek-r1:14b",
+      "display_name": "DeepSeek-R1:14b",
+      "provider": "ollama",
+      "role": "Local GPU On-Prem (Privacidad Total)",
+      "mean_global_score": 48.56666666666666,
+      "mean_comp_score": 58.333333333333336,
+      "mean_mech_score": 40.0,
+      "mean_cascade_score": 63.333333333333336,
+      "mean_rem_score": 33.333333333333336,
+      "mean_latency_seconds": 141.56543833933333,
+      "mean_tokens": 1266.0,
+      "total_tokens": 3798
+    }
+  ],
+  "winner": {
+    "model_id": "gemini-3.5-flash",
+    "display_name": "Gemini 3.5 Flash",
+    "provider": "gemini",
+    "role": "Cloud Reasoning (CoT Reflexivo)",
+    "mean_global_score": 75.83333333333333,
+    "mean_comp_score": 73.33333333333333,
+    "mean_mech_score": 73.33333333333333,
+    "mean_cascade_score": 83.33333333333333,
+    "mean_rem_score": 78.33333333333333,
+    "mean_latency_seconds": 14.814677686999934,
+    "mean_tokens": 1032.3333333333333,
+    "total_tokens": 3097
+  },
+  "evaluation_methodology": "LLM-as-a-Judge (Blind Evaluation, 4-Dimension SRE Rubric)",
+  "benchmark_averages": {
+    "incident_000": 25.166666666666668,
+    "incident_001": 77.66666666666667,
+    "incident_002": 86.63333333333333,
+    "mean_global_score": 63.155555555555544,
+    "mean_latency_seconds": 53.36679625111108
+  },
+  "ablation_metrics": {
+    "global_averages": {
+      "mean_score_neurallog": 75.83333333333333,
+      "mean_score_no_logs": 42.166666666666664,
+      "mean_score_hybrid": 68.66666666666667,
+      "mean_score_conventional": 65.13333333333334,
+      "delta_neurallog_vs_conventional": 10.699999999999989,
+      "delta_neurallog_vs_hybrid": 7.166666666666657
+    },
+    "summary_by_incident": [
+      {
+        "Incidente": "incident_000",
+        "Tipo de Anomalía": "dw_timeout",
+        "Condición A: NeuralLog": 35.0,
+        "Condición B: Sin Logs": 22.0,
+        "Condición D: Híbrido": 21.5,
+        "Condición C: Convencional": 22.0,
+        "Delta (NeuralLog vs Convencional)": "+13.0%",
+        "raw_delta": 13.0
+      },
+      {
+        "Incidente": "incident_001",
+        "Tipo de Anomalía": "emitter_down",
+        "Condición A: NeuralLog": 98.5,
+        "Condición B: Sin Logs": 82.5,
+        "Condición D: Híbrido": 90.3,
+        "Condición C: Convencional": 80.2,
+        "Delta (NeuralLog vs Convencional)": "+18.3%",
+        "raw_delta": 18.299999999999997
+      },
+      {
+        "Incidente": "incident_002",
+        "Tipo de Anomalía": "aws_down",
+        "Condición A: NeuralLog": 94.0,
+        "Condición B: Sin Logs": 22.0,
+        "Condición D: Híbrido": 94.2,
+        "Condición C: Convencional": 93.2,
+        "Delta (NeuralLog vs Convencional)": "+0.8%",
+        "raw_delta": 0.7999999999999972
+      }
+    ]
+  },
+  "models_details": {
+    "gemini-3.5-flash": {
+      "incident_000": {
+        "scores": {
+          "component_score": 0.2,
+          "mechanism_score": 0.3,
+          "cascade_score": 0.6,
+          "remediation_score": 0.5,
+          "global_score": 35.0,
+          "critique": {
+            "component_rationale": "El diagnóstico identifica erróneamente al Worker de Airflow como el componente origen del fallo. El Ground Truth establece claramente que el origen es el Data Warehouse (PostgreSQL). El asistente confunde la víctima (el cliente que intenta conectar) con el componente que sufre la interrupción real.",
+            "mechanism_rationale": "El asistente alucina una causa raíz basada en saturación de recursos (CPU/Memoria) en el Worker. Ignora la interrupción del servicio PostgreSQL en el puerto 5432, interpretando los síntomas de timeout de conexión como un problema de rendimiento local del nodo de ejecución en lugar de una caída del servicio destino.",
+            "cascade_rationale": "El análisis de propagación es aceptable al identificar correctamente que los datos quedaron represados y que hubo un impacto en la disponibilidad de datos downstream, aunque la lógica está viciada por la premisa incorrecta de que el Worker era el origen del problema.",
+            "remediation_rationale": "Las acciones son parcialmente útiles para mejorar la resiliencia del cliente (timeouts, SLAs), pero fallan al no abordar la causa raíz: la estabilidad y disponibilidad del Data Warehouse. Las recomendaciones de reinicio de pods son paliativos que no resuelven la interrupción del servicio de base de datos."
+          }
+        },
+        "latency_seconds": 15.564483139999993,
+        "completion_tokens": 909
+      },
+      "incident_001": {
+        "scores": {
+          "component_score": 1.0,
+          "mechanism_score": 0.95,
+          "cascade_score": 1.0,
+          "remediation_score": 1.0,
+          "global_score": 98.5,
+          "critique": {
+            "component_rationale": "El diagnóstico identifica correctamente los tres componentes clave (emitter, kinesis_stream, extract_task) definidos en el Ground Truth, manteniendo una jerarquía lógica impecable.",
+            "mechanism_rationale": "El asistente identifica la causa raíz con una profundidad técnica superior a la esperada. Aunque el Ground Truth menciona una 'detención silenciosa', el asistente aporta evidencia forense (logs de pip install en runtime) que explica el 'porqué' técnico de dicha detención, lo cual es una deducción de alto valor SRE.",
+            "cascade_rationale": "El análisis de propagación es excelente. Describe con precisión la inanición de datos (data starvation) aguas abajo y añade una observación técnica válida sobre el impacto en el scheduler de Airflow, demostrando una comprensión profunda del ecosistema.",
+            "remediation_rationale": "Las acciones propuestas son de nivel senior. No solo cubren la mitigación inmediata, sino que atacan la causa raíz mediante la inmutabilidad de imágenes y el endurecimiento de la seguridad (non-root), alineándose perfectamente con las mejores prácticas de SRE."
+          }
+        },
+        "latency_seconds": 14.433589733999952,
+        "completion_tokens": 1063
+      },
+      "incident_002": {
+        "scores": {
+          "component_score": 1.0,
+          "mechanism_score": 0.95,
+          "cascade_score": 0.9,
+          "remediation_score": 0.85,
+          "global_score": 94.0,
+          "critique": {
+            "component_rationale": "El diagnóstico identifica correctamente a LocalStack/kinesis_mock_server como el origen, alineándose perfectamente con el Ground Truth.",
+            "mechanism_rationale": "Excelente precisión técnica al correlacionar la CPU starvation con el bloqueo del bucle de eventos. La mención de I/O bloqueante añade profundidad técnica, aunque el Ground Truth se centraba más específicamente en el bucle de eventos asíncronos.",
+            "cascade_rationale": "El análisis de propagación es muy riguroso. Identifica correctamente el impacto bidireccional (upstream/downstream) y añade una deducción valiosa sobre el riesgo de duplicidad por TRIM_HORIZON, lo cual demuestra un entendimiento profundo del comportamiento de los consumidores de Kinesis.",
+            "remediation_rationale": "Las acciones son viables y pertinentes. Aunque las medidas preventivas son más exhaustivas que las sugeridas en el Ground Truth, son técnicamente superiores y demuestran una mentalidad de SRE proactiva (Circuit Breaker, Backpressure, transición a servicios reales)."
+          }
+        },
+        "latency_seconds": 14.445960186999855,
+        "completion_tokens": 1125
+      }
+    },
+    "gemini-3.1-flash-lite": {
+      "incident_000": {
+        "scores": {
+          "component_score": 0.2,
+          "mechanism_score": 0.1,
+          "cascade_score": 0.4,
+          "remediation_score": 0.3,
+          "global_score": 22.0,
+          "critique": {
+            "component_rationale": "El diagnóstico identifica erróneamente al 'airflow-scheduler' como el componente origen. El Ground Truth establece claramente que el fallo reside en el 'data_warehouse' (PostgreSQL). El asistente confunde un síntoma de gestión de tareas (re-adopción de tareas huérfanas) con la causa raíz.",
+            "mechanism_rationale": "El asistente alucina una causa raíz basada en 'contención de recursos' y 'thrashing' del scheduler. Ignora completamente la interrupción del servicio PostgreSQL en el puerto 5432, que es la causa técnica real. El análisis de métricas de reconstrucción de errores es irrelevante frente a la caída del servicio de base de datos.",
+            "cascade_score": "El asistente identifica correctamente que la 'load_task' sufrió latencia, pero falla al no reconocer que esta latencia fue causada por timeouts de conexión hacia el DW, atribuyéndolo erróneamente a la saturación del scheduler.",
+            "remediation_rationale": "Las recomendaciones son genéricas y enfocadas en escalar Airflow, lo cual no resuelve el problema de disponibilidad del Data Warehouse. Solo la sugerencia de revisar el 'connection pooling' es tangencialmente útil, pero carece de la acción crítica de verificar el estado del servicio PostgreSQL."
+          }
+        },
+        "latency_seconds": 3.837317460000122,
+        "completion_tokens": 685
+      },
+      "incident_001": {
+        "scores": {
+          "component_score": 0.9,
+          "mechanism_score": 0.6,
+          "cascade_score": 0.9,
+          "remediation_score": 0.85,
+          "global_score": 80.0,
+          "critique": {
+            "component_rationale": "El asistente identifica correctamente el 'emitter' como el componente origen. Aunque no menciona explícitamente 'kinesis_stream' y 'extract_task' como componentes afectados en la misma jerarquía, los integra correctamente en el análisis de flujo.",
+            "mechanism_rationale": "El asistente alucina una causa raíz específica (ejecución de 'pip install' en tiempo de ejecución) que no está presente en el Ground Truth. El Ground Truth indica una detención silenciosa, mientras que el asistente inventa una degradación por recursos. Esto penaliza la fidelidad técnica al introducir ruido no verificado.",
+            "cascade_rationale": "Excelente análisis de la propagación. Identifica correctamente la inanición de datos en 'transform_task' y 'load_task' y añade valor al explicar el comportamiento del scheduler de Airflow ante la falta de datos, lo cual es consistente con el impacto esperado.",
+            "remediation_rationale": "Las acciones son muy sólidas y superan el nivel básico del Ground Truth. Aunque la causa raíz fue alucinada, las medidas preventivas (cgroups, pre-instalación de dependencias, heartbeats) son mejores prácticas de SRE altamente pertinentes para evitar fallos de este tipo en el futuro."
+          }
+        },
+        "latency_seconds": 3.5210278619999826,
+        "completion_tokens": 751
+      },
+      "incident_002": {
+        "scores": {
+          "component_score": 0.95,
+          "mechanism_score": 0.95,
+          "cascade_score": 0.9,
+          "remediation_score": 0.9,
+          "global_score": 93.2,
+          "critique": {
+            "component_rationale": "El diagnóstico identifica correctamente a LocalStack como el componente origen, alineándose con el Ground Truth. La precisión es alta al distinguir la infraestructura de emulación de los servicios clientes.",
+            "mechanism_rationale": "Excelente precisión técnica. El asistente identifica correctamente la CPU Starvation y el bloqueo del bucle de eventos en el servidor mock, correlacionando el síntoma con la causa raíz técnica descrita en el Ground Truth.",
+            "cascade_rationale": "El análisis de propagación es muy sólido. Identifica correctamente el impacto bidireccional (upstream/downstream) y añade una deducción lógica sobre el riesgo de duplicidad de datos al reiniciar desde TRIM_HORIZON, lo cual es una inferencia experta válida.",
+            "remediation_rationale": "Las acciones son altamente viables y profesionales. Superan el nivel básico del Ground Truth al proponer patrones de resiliencia como Circuit Breakers y límites de cgroups, lo cual es esperado en un perfil de SRE Senior."
+          }
+        },
+        "latency_seconds": 3.802472858999863,
+        "completion_tokens": 786
+      }
+    },
+    "deepseek-r1:14b": {
+      "incident_000": {
+        "scores": {
+          "component_score": 0.2,
+          "mechanism_score": 0.1,
+          "cascade_score": 0.3,
+          "remediation_score": 0.2,
+          "global_score": 18.5,
+          "critique": {
+            "component_rationale": "El diagnóstico identifica erróneamente a 'load_task' y 'transform_task' como componentes origen. El Ground Truth establece claramente que el origen es el 'data_warehouse' (PostgreSQL). El asistente confunde los síntomas de carga en las tareas con la causa raíz.",
+            "mechanism_rationale": "El diagnóstico es incorrecto. Atribuye el fallo a un consumo excesivo de recursos (CPU/Memoria) en tareas de procesamiento, cuando el Ground Truth confirma una interrupción/pausa del contenedor de base de datos (puerto 5432). No hay mención de conectividad o persistencia, lo cual es una alucinación técnica.",
+            "cascade_rationale": "El análisis de propagación es especulativo y se basa en la premisa falsa de sobrecarga de recursos. Aunque menciona correctamente que el impacto llega al 'data_warehouse', lo hace en sentido inverso (como víctima de la carga de tareas) en lugar de reconocer que el fallo del DW es el que bloquea a las tareas.",
+            "remediation_rationale": "Las acciones propuestas (escalado vertical, reducción de emisión) son irrelevantes para un fallo de conectividad de base de datos. No abordan la verificación del servicio PostgreSQL ni la gestión de timeouts, lo que hace que las recomendaciones sean ineficaces para resolver el incidente real."
+          }
+        },
+        "latency_seconds": 137.95088281200015,
+        "completion_tokens": 1224
+      },
+      "incident_001": {
+        "scores": {
+          "component_score": 0.7,
+          "mechanism_score": 0.4,
+          "cascade_score": 0.8,
+          "remediation_score": 0.3,
+          "global_score": 54.5,
+          "critique": {
+            "component_rationale": "Identifica correctamente al 'emitter' como origen, pero incluye erróneamente a 'extract_task' como componente origen del fallo, cuando este es una víctima aguas abajo que sufre inanición de datos.",
+            "mechanism_rationale": "El diagnóstico es técnicamente pobre. Alucina una 'alta utilización de memoria y CPU' en el emisor que no está presente en el Ground Truth (que especifica una detención silenciosa). Confunde el síntoma (falta de datos) con una supuesta sobrecarga de recursos, fallando en identificar la causa raíz real (crash o bloqueo del proceso).",
+            "cascade_rationale": "La descripción de la propagación es correcta y lógica, identificando adecuadamente el impacto en el DAG (transform, load, data_warehouse) y la inanición de datos resultante.",
+            "remediation_rationale": "Las recomendaciones son vagas y poco operativas. Sugerir 'optimizar el código' o 'escalar recursos' no resuelve una detención silenciosa. Omite las acciones críticas de observabilidad y resiliencia (healthchecks, auto-restart, análisis de logs de excepciones) que son fundamentales para este tipo de fallo."
+          }
+        },
+        "latency_seconds": 147.28567715600002,
+        "completion_tokens": 1430
+      },
+      "incident_002": {
+        "scores": {
+          "component_score": 0.85,
+          "mechanism_score": 0.7,
+          "cascade_score": 0.8,
+          "remediation_score": 0.5,
+          "global_score": 72.7,
+          "critique": {
+            "component_rationale": "El asistente identifica correctamente a LocalStack y al emitter como componentes clave. Sin embargo, omite la extract_task como componente origen del fallo en el contexto del pipeline, aunque la menciona en el análisis de impacto. La identificación es sólida pero ligeramente incompleta respecto al Ground Truth.",
+            "mechanism_rationale": "El asistente identifica correctamente la CPU starvation en LocalStack. No obstante, atribuye erróneamente altos consumos de memoria y CPU al emitter como causa raíz, cuando el Ground Truth indica que el fallo es una congelación del endpoint de Kinesis (LocalStack) que provoca síntomas en el emitter. Confunde síntomas de contrapresión con causas raíz en el emitter.",
+            "cascade_rationale": "El análisis de propagación es bastante preciso. Identifica correctamente el impacto bidireccional (upstream en emitter y downstream en extract/transform/load). La lógica de inanición de datos y timeouts está bien alineada con el Ground Truth.",
+            "remediation_rationale": "La calidad de la remediación es baja. Sugerir el reinicio del emitter es una medida reactiva ineficaz dado que el origen es LocalStack. La propuesta de aumentar timeouts es una mala práctica (anti-pattern) que enmascara el problema en lugar de resolver la causa raíz. Las medidas preventivas son genéricas y no abordan la estabilidad del entorno de desarrollo/test (LocalStack)."
+          }
+        },
+        "latency_seconds": 139.45975504999979,
+        "completion_tokens": 1144
+      }
+    }
+  }
+}
