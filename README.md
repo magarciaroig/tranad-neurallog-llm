@@ -1,3 +1,6 @@
+> [!NOTE]
+> **English documentation available:** For the English version of this documentation, please see [`README.en.md`](README.en.md).
+
 # 🚀 TranAD+ en PyTorch: Detección de Anomalías y AIOps en Pipelines de Datos
 
 Este repositorio contiene la implementación y el flujo experimental del algoritmo **TranAD+** (*A Transformer-Based Deep Learning Approach to Anomaly Detection of High-Bandwidth Multivariate Time-Series Satellite Communications*, Yermakov et al., 2025; basado en *TranAD*, Tuli et al., 2022) desarrollado en **PyTorch** con aceleración por **GPU local (NVIDIA CUDA)**.
@@ -11,9 +14,11 @@ El proyecto se enmarca en un **Trabajo de Fin de Máster (TFM)** enfocado en la 
 ```text
 .
 ├── environment.yml                                      # Entorno Conda con soporte GPU (CUDA 12.1/12.4)
-├── README.md                                            # Guía de instalación, configuración y ejecución
-├── 01_dataset_cleaning_and_normalization.ipynb          # Paso 1: Limpieza, normalización y ventanas
-├── 02_tranad_plus_model_training_and_evaluation.ipynb  # Paso 2: Modelo TranAD+, entrenamiento y evaluación RCA
+├── README.md                                            # Guía de instalación y flujo (Versión en inglés: README.en.md)
+├── 01_normalizacion_datos.ipynb                         # Paso 1: Limpieza, normalización y ventanas (EN: 01_data_normalization.ipynb)
+├── 02_tranad_plus_entrenamiento.ipynb                   # Paso 2: Modelo TranAD+, entrenamiento y evaluación (EN: 02_tranad_plus_training.ipynb)
+├── 03_neurallog_seleccion_logs_relevantes.ipynb         # Paso 3: Selección semántica de logs con NeuralLog (EN: 03_neurallog_relevant_log_selection.ipynb)
+├── 04_asistente_llm_diagnostico_rca.ipynb               # Paso 4: Diagnóstico RCA con LLM y Juez SRE (EN: 04_llm_assistant_rca_diagnosis.ipynb)
 ├── models/                                              # Checkpoints de modelos entrenados (.pt)
 │   └── tranad_plus_best.pt
 ├── processed_data/                                      # Tensores procesados, escaladores y predicciones
@@ -26,6 +31,11 @@ El proyecto se enmarca en un **Trabajo de Fin de Máster (TFM)** enfocado en la 
 │   ├── grid_search_results.csv
 │   ├── test_detections.csv
 │   └── tranad_evaluation_metrics.json
+├── llms_output/                                         # Informes diagnósticos de LLMs, benchmarks y métricas
+│   ├── cached_llm_responses.json
+│   ├── llm_rca_diagnostic_reports.json
+│   ├── llm_rca_diagnostic_reports.md
+│   └── llm_rca_benchmark_metrics.json
 └── dataset_gen/                                         # Infraestructura de simulación y caos
     ├── chaos_injector.sh                                # Inyección interactiva de caos
     ├── docker-compose.yml                               # Servicios (Airflow, Kinesis, DW, Prometheus)
