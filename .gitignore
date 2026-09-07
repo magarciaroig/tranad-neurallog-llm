@@ -2,8 +2,6 @@
 *.log
 dataset_gen/tfm_dataset/*
 dataset_gen/logs/*
-processed_data/*
-models/*
 .env
 *.env
 .env.*
